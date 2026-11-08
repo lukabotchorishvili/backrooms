@@ -1,0 +1,243 @@
+// The notebook: a physical ruled pad (paper + ink) in an otherwise dark interface.
+
+.overlay--notebook {
+  background: rgba(3, 3, 2, 0.74);
+}
+
+.notebook {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(46rem, 92vw);
+  height: min(84vh, 52rem);
+  color: var(--c-ink);
+  background-color: var(--c-paper);
+  background-image:
+    // ruled lines
+    repeating-linear-gradient(to bottom, transparent 0 1.7rem, rgba(52, 72, 104, 0.14) 1.7rem calc(1.7rem + 1px)),
+    // uneven light on the page
+    radial-gradient(ellipse at 45% 35%, rgba(255, 250, 232, 0.2) 0%, rgba(42, 32, 16, 0.24) 100%);
+  transform-origin: 50% 70%;
+  animation: notebook-in 0.35s var(--ease-out) both;
+
+  // Red margin rule
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 4.4rem;
+    width: 1px;
+    background: rgba(141, 58, 47, 0.38);
+    pointer-events: none;
+  }
+
+  // Spiral binding holes
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0.55rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    height: 8px;
+    background: radial-gradient(circle, rgba(18, 16, 12, 0.8) 0 3px, transparent 3.5px) 0 0 / 22px 8px repeat-x;
+    pointer-events: none;
+  }
+}
+
+.notebook__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-8) var(--s-6) var(--s-3) 5.25rem;
+  border-bottom: 1px solid rgba(36, 33, 27, 0.25);
+}
+
+.notebook__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  font-stretch: condensed;
+  letter-spacing: var(--track);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.notebook__owner {
+  margin-top: var(--s-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--track-tight);
+  color: var(--c-ink-2);
+}
+
+.notebook__count {
+  display: grid;
+  justify-items: end;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--c-ink-2);
+}
+
+.notebook__count-sub {
+  color: var(--c-ink-red);
+}
+
+.notebook__pages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--s-4) var(--s-6) var(--s-6) 5.25rem;
+  scrollbar-color: rgba(36, 33, 27, 0.4) transparent;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 1px rgba(36, 33, 27, 0.45);
+  }
+}
+
+.notebook__room + .notebook__room {
+  margin-top: var(--s-6);
+}
+
+.notebook__room-name {
+  margin-bottom: var(--s-2);
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  font-stretch: condensed;
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  color: var(--c-ink-red);
+}
+
+.notebook__entries {
+  list-style: none;
+  display: grid;
+  gap: var(--s-3);
+}
+
+.nb-entry {
+  position: relative;
+  animation: fx-fade-in 0.4s ease-out both;
+}
+
+// Times live in the margin, left of the red rule.
+.nb-entry__clock {
+  position: absolute;
+  top: 0.12rem;
+  left: -4.6rem;
+  width: 3.7rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-align: right;
+  color: var(--c-ink-2);
+}
+
+.nb-entry__subject {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.nb-entry__text {
+  margin-top: 0.1rem;
+  font-size: var(--fs-md);
+  line-height: 1.5;
+  color: #2c281f;
+}
+
+.nb-entry.is-filed {
+  .nb-entry__subject,
+  .nb-entry__text {
+    color: rgba(36, 33, 27, 0.55);
+    text-decoration: line-through;
+    text-decoration-color: rgba(141, 58, 47, 0.75);
+    text-decoration-thickness: 1px;
+  }
+
+  .nb-entry__clock {
+    color: rgba(36, 33, 27, 0.5);
+  }
+}
+
+.nb-entry__filed {
+  display: inline-block;
+  margin-left: var(--s-2);
+  padding: 0 0.3rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 400;
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  vertical-align: 0.1em;
+  color: var(--c-ink-red);
+  border: 1px solid currentColor;
+}
+
+.notebook__empty {
+  display: grid;
+  gap: var(--s-2);
+  max-width: 30rem;
+  padding-top: var(--s-2);
+  font-size: var(--fs-md);
+  line-height: 1.6;
+  color: var(--c-ink-2);
+
+  p:first-child {
+    font-weight: 600;
+    color: var(--c-ink);
+  }
+}
+
+.notebook__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-3) var(--s-6) var(--s-4) 5.25rem;
+  border-top: 1px solid rgba(36, 33, 27, 0.22);
+}
+
+.notebook__keys {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--c-ink-2);
+}
+
+@keyframes notebook-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) rotate(-0.6deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .notebook::before {
+    display: none;
+  }
+
+  .notebook__head,
+  .notebook__pages,
+  .notebook__foot {
+    padding-left: var(--s-5);
+  }
+
+  .nb-entry__clock {
+    position: static;
+    display: block;
+    width: auto;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notebook {
+    animation-name: fx-fade-in;
+  }
+}

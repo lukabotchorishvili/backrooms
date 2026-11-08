@@ -1,0 +1,130 @@
+// Reset + document defaults. The game owns the whole viewport: nothing scrolls at page level.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--c-void);
+  color: var(--c-text);
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+dl,
+dd,
+ol,
+ul,
+figure {
+  margin: 0;
+}
+
+ol,
+ul {
+  padding: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 1px solid var(--c-tube);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: rgba(195, 220, 184, 0.3);
+  color: var(--c-text);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(216, 212, 200, 0.22) transparent;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Keycap
+.key {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0.05em 0.42em;
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+  letter-spacing: var(--track-tight);
+  color: var(--c-text);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(216, 212, 200, 0.38);
+  border-bottom-width: 2px;
+  vertical-align: 0.08em;
+  text-shadow: none;
+
+  & + & {
+    margin-left: 0.2em;
+  }
+}
+
+.key--tiny {
+  font-size: 0.6em;
+}
+
+.key--ink {
+  color: var(--c-ink);
+  background: rgba(36, 33, 27, 0.06);
+  border-color: rgba(36, 33, 27, 0.5);
+}

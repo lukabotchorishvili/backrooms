@@ -1,0 +1,381 @@
+// /play: canvas, overlay base, loading, error, wake-up, intro, pause, click-to-continue veil, perf.
+
+.game {
+  position: fixed;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  background: #000;
+}
+
+.game__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  outline: none;
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+/* ------------------------------------------------------------------ overlay base */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  animation: fx-fade-in var(--dur) ease-out both;
+}
+
+/* ------------------------------------------------------------------ loading */
+
+.overlay--loading {
+  background: var(--c-void);
+  animation: none;
+}
+
+.loading {
+  display: grid;
+  gap: var(--s-3);
+  width: min(26rem, 82vw);
+}
+
+.loading__floor {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  font-stretch: condensed;
+  letter-spacing: var(--track-wider);
+  color: var(--c-text-2);
+}
+
+.loading__bar {
+  height: 2px;
+  overflow: hidden;
+  background: var(--c-rule);
+}
+
+.loading__fill {
+  display: block;
+  height: 100%;
+  background: var(--c-green);
+  box-shadow: 0 0 8px var(--c-green-glow);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s var(--ease-out);
+}
+
+.loading__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-4);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--track-tight);
+  color: var(--c-text-2);
+}
+
+.loading__percent {
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text-3);
+}
+
+.loading__flavour {
+  min-height: 1.4em;
+  margin-top: var(--s-4);
+  font-size: var(--fs-sm);
+  font-style: italic;
+  color: var(--c-text-3);
+  animation: fx-fade-in 0.7s ease-out both;
+}
+
+/* ------------------------------------------------------------------ error */
+
+.overlay--error {
+  background: radial-gradient(ellipse at 50% 45%, #14100d 0%, var(--c-void) 72%);
+}
+
+.failure {
+  display: grid;
+  gap: var(--s-4);
+  width: min(38rem, 88vw);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--c-amber-2);
+}
+
+.failure__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 600;
+  font-stretch: condensed;
+  letter-spacing: var(--track-wide);
+  line-height: 1.15;
+}
+
+.failure__message {
+  max-height: 40vh;
+  overflow-y: auto;
+  padding: var(--s-3) var(--s-4);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--c-text-2);
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid var(--c-amber-2);
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.failure__actions {
+  margin-top: var(--s-2);
+}
+
+/* ------------------------------------------------------------------ click to wake up */
+
+.overlay--wake {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-4);
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: var(--s-6);
+  border: 0;
+  color: var(--c-text);
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 55%, rgba(4, 4, 3, 0.55) 0%, rgba(3, 3, 2, 0.94) 75%);
+  animation: fx-fade-in 0.8s ease-out both;
+
+  &:focus-visible {
+    outline: none;
+
+    .wake__label {
+      color: var(--c-tube);
+    }
+  }
+}
+
+.wake__label {
+  padding-left: var(--track-wider);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.4vw, 2.5rem);
+  font-weight: 600;
+  font-stretch: condensed;
+  letter-spacing: 0.42em;
+  animation: fx-breathe 3.6s ease-in-out infinite;
+  transition: color var(--dur);
+}
+
+.wake__details {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--track-wide);
+  color: var(--c-text-2);
+}
+
+.wake__hint {
+  margin-top: var(--s-6);
+  font-size: var(--fs-xs);
+  font-style: italic;
+  color: var(--c-text-3);
+}
+
+/* ------------------------------------------------------------------ intro */
+
+.overlay--intro {
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.15) 70%);
+}
+
+.intro__console {
+  display: grid;
+  gap: var(--s-3);
+  min-width: min(30rem, 84vw);
+  font-family: var(--font-mono);
+  font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+  letter-spacing: var(--track);
+  color: var(--c-text);
+  text-shadow:
+    0 0 10px rgba(216, 212, 200, 0.25),
+    0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.intro__line {
+  animation: fx-fade-in 0.3s ease-out both;
+}
+
+.intro__prompt {
+  margin-right: var(--s-3);
+  color: var(--c-green);
+}
+
+.intro__skip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6vh;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--track-wider);
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--c-text-3);
+  animation: fx-fade-in 1s 1.5s ease-out both;
+}
+
+/* ------------------------------------------------------------------ pause */
+
+.overlay--pause {
+  justify-items: start;
+  background: linear-gradient(90deg, rgba(4, 4, 3, 0.94) 0%, rgba(4, 4, 3, 0.8) 45%, rgba(4, 4, 3, 0.6) 100%);
+}
+
+.pause {
+  display: grid;
+  gap: var(--s-6);
+  width: min(42rem, 90vw);
+  max-height: 100%;
+  overflow-y: auto;
+  margin-left: clamp(1.5rem, 9vw, 8rem);
+  padding-block: var(--s-6);
+  animation: fx-rise-in 0.35s var(--ease-out) both;
+}
+
+.pause__head {
+  display: grid;
+  gap: var(--s-1);
+  padding-left: var(--s-4);
+  border-left: 2px solid var(--c-green-2);
+}
+
+.pause__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 700;
+  font-stretch: condensed;
+  letter-spacing: var(--track-wider);
+  line-height: 1;
+}
+
+.pause__status {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--track);
+  color: var(--c-text-2);
+}
+
+.pause__objective {
+  max-width: 34rem;
+  margin-top: var(--s-2);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--c-text-2);
+}
+
+.pause__label {
+  margin-right: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--track-wide);
+  color: var(--c-green);
+}
+
+.pause-list {
+  display: grid;
+  gap: 0.15rem;
+  padding-left: var(--s-4);
+}
+
+.pause__hint {
+  padding-left: var(--s-4);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--track-tight);
+  color: var(--c-text-3);
+}
+
+.pause .confirm {
+  margin-left: var(--s-4);
+}
+
+/* ------------------------------------------------------------------ click to continue */
+
+.veil {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-veil);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--c-text);
+  background: rgba(3, 3, 2, 0.5);
+  // Short delay: pointer-lock loss is usually followed by a pause a frame later.
+  animation: fx-fade-in 0.25s 0.18s ease-out both;
+
+  &:focus-visible {
+    outline: none;
+
+    .veil__label {
+      color: var(--c-tube);
+    }
+  }
+}
+
+.veil__label {
+  padding-left: var(--track-wider);
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-weight: 600;
+  font-stretch: condensed;
+  letter-spacing: 0.38em;
+}
+
+.veil__hint {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--track);
+  color: var(--c-text-3);
+}
+
+/* ------------------------------------------------------------------ perf readout */
+
+.perf {
+  position: absolute;
+  left: var(--s-3);
+  bottom: var(--s-2);
+  z-index: var(--z-top);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--track-tight);
+  white-space: nowrap;
+  color: rgba(216, 212, 200, 0.6);
+  text-shadow: 0 1px 2px #000;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wake__label {
+    animation: none;
+  }
+
+  .pause {
+    animation-name: fx-fade-in;
+  }
+}

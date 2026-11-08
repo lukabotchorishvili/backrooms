@@ -1,0 +1,390 @@
+// Main menu: corridor backdrop, logo with floor reflection, centred list, endings record.
+
+.mm {
+  position: fixed;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  background: var(--c-void);
+}
+
+.corridor {
+  position: absolute;
+  inset: 0;
+  display: block;
+  animation: fx-fade-in 2.4s ease-out both;
+}
+
+.corridor__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mm__frame {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  justify-items: center;
+  height: 100%;
+  padding: clamp(1.5rem, 7vh, 4.5rem) var(--s-6) var(--s-5);
+}
+
+/* ------------------------------------------------------------------ brand */
+
+.mm__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition:
+    opacity 0.5s var(--ease-out),
+    filter 0.5s var(--ease-out);
+}
+
+.mm__company {
+  margin-top: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--track-wider);
+  color: var(--c-text-3);
+  animation: fx-fade-in 1.2s 1.2s ease-out both;
+}
+
+.logo {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo__title,
+.logo__reflection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--font-display);
+  // Bounded by both width and height so the whole menu fits short laptop screens.
+  font-size: clamp(2.5rem, min(9vw, 12.5vh), 7.25rem);
+  font-weight: 700;
+  font-stretch: condensed;
+  line-height: 0.86;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.logo__line {
+  display: block;
+  // Compensate trailing letter-spacing so lines centre optically.
+  padding-left: 0.05em;
+}
+
+.logo__title {
+  color: var(--c-text);
+  text-shadow:
+    0 0 1px rgba(216, 212, 200, 0.4),
+    0 0 34px rgba(210, 225, 195, 0.12);
+  animation:
+    logo-in 2s var(--ease-out) both,
+    logo-hum 11s 3s linear infinite;
+
+  .logo__line--lie {
+    color: #c9c3b1;
+  }
+}
+
+.logo__floor {
+  width: min(78vw, 34rem);
+  height: 1px;
+  margin: 0.4em 0 0.3em;
+  background: linear-gradient(90deg, transparent, rgba(216, 212, 200, 0.32) 20%, rgba(216, 212, 200, 0.32) 80%, transparent);
+  animation: fx-fade-in 1.6s 0.6s ease-out both;
+}
+
+// The reflection: mirrored, blurred and faded by a mask. In local (unflipped) coordinates the
+// bottom line touches the floor, so the mask is opaque at the bottom and fades upwards.
+.logo__reflection {
+  margin-bottom: -0.95em;
+  color: #b9b4a5;
+  opacity: 0.3;
+  filter: blur(1.1px);
+  transform: scaleY(-1);
+  transform-origin: 50% 50%;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.45) 30%, transparent 62%);
+  mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.45) 30%, transparent 62%);
+  animation:
+    logo-reflection-in 2.4s 0.4s var(--ease-out) backwards,
+    logo-ripple 9s 3s ease-in-out infinite;
+
+  &.is-listening {
+    color: #cfe0c3;
+    opacity: 0.44;
+    filter: blur(0.5px);
+  }
+}
+
+@keyframes logo-in {
+  from {
+    opacity: 0;
+    letter-spacing: 0.16em;
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0.05em;
+    filter: blur(0);
+  }
+}
+
+@keyframes logo-reflection-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.3;
+  }
+}
+
+// Mostly steady, with one dip like a tube losing its ballast for a frame.
+@keyframes logo-hum {
+  0%,
+  90%,
+  94%,
+  100% {
+    opacity: 1;
+  }
+  91% {
+    opacity: 0.62;
+  }
+  92% {
+    opacity: 0.95;
+  }
+  93% {
+    opacity: 0.78;
+  }
+}
+
+@keyframes logo-ripple {
+  0%,
+  100% {
+    transform: scaleY(-1) skewX(0deg) translateX(0);
+  }
+  50% {
+    transform: scaleY(-1) skewX(0.6deg) translateX(1px);
+  }
+}
+
+/* ------------------------------------------------------------------ list */
+
+.mm__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 0;
+  padding-top: clamp(1.25rem, 6vh, 3.5rem);
+}
+
+.mm-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  width: min(28rem, 100%);
+}
+
+.mm-list__row {
+  width: 100%;
+  animation: fx-rise-in 0.55s var(--ease-out) both;
+
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{600 + $i * 70}ms;
+    }
+  }
+}
+
+.mm__hint {
+  margin-top: var(--s-6);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--track);
+  color: var(--c-text-3);
+  animation: fx-fade-in 1s 1.4s both;
+}
+
+// Sub-views: the logo ghosts out and the panel takes the centre of the screen.
+.mm--sub {
+  .mm__brand {
+    opacity: 0.1;
+    filter: blur(2px);
+  }
+
+  .mm__stage {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    justify-content: center;
+    padding: var(--s-6);
+  }
+}
+
+/* ------------------------------------------------------------------ footer */
+
+.mm__footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: var(--s-4);
+  width: 100%;
+  animation: fx-fade-in 1s 1.2s both;
+}
+
+.mm-endings {
+  justify-self: start;
+}
+
+.mm-endings__title {
+  margin-bottom: var(--s-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 400;
+  letter-spacing: var(--track-wider);
+  color: var(--c-text-3);
+}
+
+.mm-endings__count {
+  margin-left: 0.35rem;
+  color: var(--c-text-2);
+}
+
+.mm-endings__list {
+  list-style: none;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.mm-endings__item {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--track);
+  color: var(--c-text-2);
+
+  &.is-locked {
+    color: var(--c-text-4);
+  }
+}
+
+.mm-endings__code {
+  display: inline-grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  border: 1px solid currentColor;
+}
+
+.mm__storage {
+  grid-column: 2;
+  max-width: 26rem;
+}
+
+.mm__sign {
+  grid-column: 3;
+  justify-self: end;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--track-wide);
+  color: var(--c-text-4);
+}
+
+/* ------------------------------------------------------------------ credits */
+
+.credits {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.credits__row {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: var(--s-4);
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid var(--c-rule);
+
+  dt {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    letter-spacing: var(--track);
+    text-transform: uppercase;
+    color: var(--c-text-3);
+    padding-top: 0.15rem;
+  }
+
+  dd {
+    font-size: var(--fs-md);
+    color: var(--c-text);
+  }
+}
+
+.credits__coda {
+  margin-top: var(--s-5);
+  font-size: var(--fs-sm);
+  font-style: italic;
+  color: var(--c-text-3);
+}
+
+@media (max-width: 640px) {
+  .mm__footer {
+    grid-template-columns: 1fr;
+  }
+
+  .mm__storage,
+  .mm__sign {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .credits__row {
+    grid-template-columns: 1fr;
+    gap: var(--s-1);
+  }
+}
+
+@media (max-height: 780px) {
+  .mm__frame {
+    padding-top: 1.25rem;
+  }
+
+  .mm__stage {
+    padding-top: 0.75rem;
+  }
+}
+
+@media (max-height: 620px) {
+  .mm__hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo__title {
+    animation: fx-fade-in 0.8s ease-out both;
+  }
+
+  .logo__reflection {
+    animation: logo-reflection-in 0.8s ease-out backwards;
+  }
+
+  .mm-list__row,
+  .panel {
+    animation-name: fx-fade-in;
+  }
+}

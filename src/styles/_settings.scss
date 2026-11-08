@@ -1,0 +1,110 @@
+// Settings panel (main menu + pause menu).
+
+.panel--settings {
+  display: flex;
+  flex-direction: column;
+  width: min(42rem, 100%);
+  max-height: min(84vh, 52rem);
+  padding-bottom: var(--s-6);
+}
+
+.panel--inline {
+  max-height: min(66vh, 44rem);
+}
+
+.settings__body {
+  min-height: 0;
+  overflow-y: auto;
+  margin-right: calc(var(--s-3) * -1);
+  padding-right: var(--s-3);
+}
+
+.settings__group + .settings__group {
+  margin-top: var(--s-6);
+}
+
+.settings__heading {
+  margin-bottom: var(--s-1);
+  padding-bottom: var(--s-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 400;
+  letter-spacing: var(--track-wider);
+  color: var(--c-green);
+  border-bottom: 1px solid var(--c-rule);
+}
+
+.setting {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(11rem, 17rem);
+  align-items: center;
+  gap: var(--s-4);
+  min-height: 2.6rem;
+  padding: 0.2rem 0 0.2rem var(--s-3);
+  border-bottom: 1px solid rgba(216, 212, 200, 0.05);
+
+  // Focus marker: a short tube at the start of the row.
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 2px;
+    height: 0;
+    background: var(--c-tube);
+    box-shadow: 0 0 8px var(--c-green-glow);
+    transform: translateY(-50%);
+    transition: height var(--dur) var(--ease-out);
+  }
+
+  &:focus-within::before {
+    height: 1.2rem;
+  }
+
+  &:focus-within .setting__label {
+    color: var(--c-text);
+  }
+}
+
+.setting__label {
+  display: grid;
+  font-size: var(--fs-md);
+  color: var(--c-text-2);
+  transition: color var(--dur-fast);
+}
+
+.setting__hint {
+  font-size: var(--fs-xs);
+  color: var(--c-text-3);
+}
+
+.setting__control {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-width: 0;
+}
+
+.setting__value {
+  flex: none;
+  min-width: 3.25rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--track-tight);
+  text-align: right;
+  color: var(--c-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.settings .panel__actions {
+  margin-top: var(--s-6);
+}
+
+@media (max-width: 560px) {
+  .setting {
+    grid-template-columns: 1fr;
+    gap: var(--s-1);
+    padding-block: var(--s-2);
+  }
+}

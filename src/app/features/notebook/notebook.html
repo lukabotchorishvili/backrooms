@@ -1,0 +1,48 @@
+<article class="notebook" role="dialog" aria-modal="true" aria-labelledby="notebook-title">
+  <header class="notebook__head">
+    <div>
+      <h1 class="notebook__title" id="notebook-title">Notebook</h1>
+      <p class="notebook__owner">Employee {{ employee() }} · {{ floor() }} · {{ clock() }}</p>
+    </div>
+    <p class="notebook__count">
+      {{ total() }} {{ total() === 1 ? 'entry' : 'entries' }}
+      @if (total() > 0) {
+        <span class="notebook__count-sub">{{ unreported() }} not filed</span>
+      }
+    </p>
+  </header>
+
+  <div class="notebook__pages" tabindex="0" aria-label="Notebook entries">
+    @for (group of groups(); track group.roomId) {
+      <section class="notebook__room" [attr.aria-labelledby]="'nb-' + group.roomId">
+        <h2 class="notebook__room-name" [id]="'nb-' + group.roomId">{{ group.roomName }}</h2>
+        <ol class="notebook__entries">
+          @for (entry of group.entries; track entry.id) {
+            <li class="nb-entry" [class.is-filed]="entry.reported">
+              <span class="nb-entry__clock">{{ entry.clock }}</span>
+              <div class="nb-entry__body">
+                <p class="nb-entry__subject">
+                  {{ entry.subject }}
+                  @if (entry.reported) {
+                    <span class="nb-entry__filed">filed</span>
+                  }
+                </p>
+                <p class="nb-entry__text">{{ entry.text }}</p>
+              </div>
+            </li>
+          }
+        </ol>
+      </section>
+    } @empty {
+      <div class="notebook__empty">
+        <p>Nothing written down yet.</p>
+        <p>Look closely. Press <kbd class="key key--ink">E</kbd> to inspect things. Anything you notice is noted here, and can be reported at the reception terminal.</p>
+      </div>
+    }
+  </div>
+
+  <footer class="notebook__foot">
+    <span class="notebook__keys"><kbd class="key key--ink">TAB</kbd> / <kbd class="key key--ink">ESC</kbd> close</span>
+    <button type="button" class="btn btn--ink" appAutofocus (click)="close()">CLOSE</button>
+  </footer>
+</article>

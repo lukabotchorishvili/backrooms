@@ -36,7 +36,10 @@
             "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
-            }
+            },
+            "allowedCommonJsDependencies": [
+              "howler"
+            ]
           },
           "configurations": {
             "production": {

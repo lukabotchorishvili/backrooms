@@ -1,0 +1,142 @@
+@let s = settings();
+
+<header class="panel__head">
+  <span class="panel__code" aria-hidden="true">FAC-SET</span>
+  <h2 class="panel__title" id="settings-title">SETTINGS</h2>
+  <p class="panel__lede">Changes apply immediately.</p>
+</header>
+
+<div class="settings__body" appMenuNav role="group" aria-labelledby="settings-title">
+  <section class="settings__group" aria-labelledby="settings-controls">
+    <h3 class="settings__heading" id="settings-controls">CONTROLS</h3>
+
+    @for (def of controls; track def.key; let first = $first) {
+      <div class="setting" data-nav-row>
+        <label class="setting__label" [for]="'set-' + def.key">{{ def.label }}</label>
+        <div class="setting__control">
+          <input
+            class="range"
+            type="range"
+            [id]="'set-' + def.key"
+            [min]="def.min"
+            [max]="def.max"
+            [step]="def.step"
+            [value]="s[def.key]"
+            [style.--fill]="sliderPercent(def) + '%'"
+            [attr.aria-valuetext]="def.format(s[def.key])"
+            [appAutofocus]="first"
+            (input)="onSlider(def.key, $event)"
+          />
+          <span class="setting__value" aria-hidden="true">{{ def.format(s[def.key]) }}</span>
+        </div>
+      </div>
+    }
+
+    <div class="setting" data-nav-row>
+      <span class="setting__label" id="set-invert-label">Invert mouse</span>
+      <div class="setting__control">
+        <button
+          type="button"
+          class="switch"
+          role="switch"
+          aria-labelledby="set-invert-label"
+          [attr.aria-checked]="s.invertMouse"
+          (click)="toggleInvert()"
+        >
+          <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <span class="switch__state">{{ s.invertMouse ? 'ON' : 'OFF' }}</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="settings__group" aria-labelledby="settings-audio">
+    <h3 class="settings__heading" id="settings-audio">AUDIO</h3>
+    @for (def of volumes; track def.key) {
+      <div class="setting" data-nav-row>
+        <label class="setting__label" [for]="'set-' + def.key">{{ def.label }}</label>
+        <div class="setting__control">
+          <input
+            class="range"
+            type="range"
+            [id]="'set-' + def.key"
+            [min]="def.min"
+            [max]="def.max"
+            [step]="def.step"
+            [value]="s[def.key]"
+            [style.--fill]="sliderPercent(def) + '%'"
+            [attr.aria-valuetext]="def.format(s[def.key])"
+            (input)="onSlider(def.key, $event)"
+          />
+          <span class="setting__value" aria-hidden="true">{{ def.format(s[def.key]) }}</span>
+        </div>
+      </div>
+    }
+  </section>
+
+  <section class="settings__group" aria-labelledby="settings-display">
+    <h3 class="settings__heading" id="settings-display">DISPLAY</h3>
+
+    <div class="setting" data-nav-row>
+      <span class="setting__label" id="set-quality-label">Graphics quality</span>
+      <div class="setting__control segmented" role="group" aria-labelledby="set-quality-label">
+        @for (q of qualities; track q.id) {
+          <button
+            type="button"
+            class="segmented__option"
+            [attr.aria-pressed]="s.graphicsQuality === q.id"
+            (click)="setQuality(q.id)"
+          >
+            {{ q.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="setting" data-nav-row>
+      <span class="setting__label" id="set-fullscreen-label">Fullscreen</span>
+      <div class="setting__control">
+        <button
+          type="button"
+          class="switch"
+          role="switch"
+          aria-labelledby="set-fullscreen-label"
+          [attr.aria-checked]="s.fullscreen"
+          (click)="toggleFullscreen()"
+        >
+          <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <span class="switch__state">{{ s.fullscreen ? 'ON' : 'OFF' }}</span>
+        </button>
+      </div>
+    </div>
+
+    @for (t of displayToggles; track t.key) {
+      <div class="setting" data-nav-row>
+        <span class="setting__label" [id]="'set-' + t.key + '-label'">
+          {{ t.label }}
+          @if (t.hint) {
+            <small class="setting__hint">{{ t.hint }}</small>
+          }
+        </span>
+        <div class="setting__control">
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [attr.aria-labelledby]="'set-' + t.key + '-label'"
+            [attr.aria-checked]="s[t.key]"
+            (click)="toggle(t.key)"
+          >
+            <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+            <span class="switch__state">{{ s[t.key] ? 'ON' : 'OFF' }}</span>
+          </button>
+        </div>
+      </div>
+    }
+  </section>
+
+  <div class="panel__actions btn-row" data-nav-row>
+    <button type="button" class="btn btn--primary" (click)="close()">BACK</button>
+    <button type="button" class="btn btn--quiet" (click)="restoreDefaults()">RESTORE DEFAULTS</button>
+  </div>
+</div>

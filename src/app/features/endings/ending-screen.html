@@ -1,0 +1,78 @@
+@let r = result();
+
+<div class="ending" role="dialog" aria-modal="true" aria-label="Ending">
+  <div class="ending__epilogue" aria-live="polite">
+    @for (line of lines(); track $index) {
+      @if ($index <= lineIndex()) {
+        <p class="ending__line" [class.ending__line--blank]="!line">
+          <app-typewriter
+            [text]="line"
+            [cps]="14"
+            [delay]="$index === 0 ? 1200 : 0"
+            [instant]="revealAll()"
+            (done)="lineDone($index)"
+          />
+        </p>
+      }
+    }
+  </div>
+
+  @if (r && step() !== 'lines') {
+    <p class="ending__caption">{{ r.ending.epilogue.caption }}</p>
+  }
+
+  @if (step() === 'summary') {
+    <section class="ending__summary">
+      @if (r) {
+        <h1 class="ending__title" id="ending-title">
+          <span class="ending__code">ENDING {{ r.ending.code }}</span>
+          <span class="ending__dash" aria-hidden="true">—</span>
+          <span class="ending__name">{{ r.ending.title }}</span>
+        </h1>
+        @if (r.newlyUnlocked) {
+          <p class="ending__new">NEW ENDING UNLOCKED</p>
+        }
+      } @else {
+        <h1 class="ending__title" id="ending-title">SHIFT COMPLETE</h1>
+      }
+
+      @if (stats(); as s) {
+        <dl class="ending__stats">
+          <div class="ending__stat">
+            <dt>Time on floor</dt>
+            <dd>{{ s.time }}</dd>
+          </div>
+          <div class="ending__stat">
+            <dt>Anomalies confirmed</dt>
+            <dd>{{ s.confirmed }}</dd>
+          </div>
+          <div class="ending__stat">
+            <dt>False reports</dt>
+            <dd>{{ s.falseReports }}</dd>
+          </div>
+          <div class="ending__stat">
+            <dt>Peak attention</dt>
+            <dd>{{ s.peak }} <span class="ending__sub">{{ s.peakLabel }}</span></dd>
+          </div>
+          <div class="ending__stat ending__stat--wide">
+            <dt>The building noted</dt>
+            <dd>{{ s.tendencies }}</dd>
+          </div>
+        </dl>
+      }
+
+      @if (r) {
+        <p class="ending__record">ENDINGS {{ r.unlockedCount }}/{{ r.totalEndings }}</p>
+      }
+
+      <div class="ending__actions" appMenuNav>
+        <div class="btn-row" data-nav-row>
+          <button type="button" class="btn btn--primary" appAutofocus (click)="newShift()">NEW SHIFT</button>
+          <button type="button" class="btn" (click)="mainMenu()">MAIN MENU</button>
+        </div>
+      </div>
+    </section>
+  } @else {
+    <p class="ending__skip" aria-hidden="true">Press any key</p>
+  }
+</div>

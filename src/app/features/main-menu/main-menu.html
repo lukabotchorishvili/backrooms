@@ -1,0 +1,157 @@
+<app-corridor-backdrop />
+
+<div class="mm__frame">
+  <header class="mm__brand">
+    <app-floor-logo />
+    <p class="mm__company">
+      {{ stage.companyName }}<span aria-hidden="true"> · </span>{{ stage.floorLabel }}<span aria-hidden="true"> · </span>FACILITIES INSPECTION
+    </p>
+  </header>
+
+  <main class="mm__stage">
+    @switch (view()) {
+      @case ('root') {
+        <nav class="mm-list" appMenuNav aria-label="Main menu">
+          <div class="mm-list__row" data-nav-row>
+            <button
+              type="button"
+              class="mm-item"
+              [disabled]="!saves.hasContinue()"
+              [appAutofocus]="focusTarget() === 'continue'"
+              (click)="continueShift()"
+            >
+              <span class="mm-item__label">CONTINUE</span>
+              <span class="mm-item__meta">{{ continueLine() ?? 'NO SHIFT IN PROGRESS' }}</span>
+            </button>
+          </div>
+          <div class="mm-list__row" data-nav-row>
+            <button
+              type="button"
+              class="mm-item"
+              [appAutofocus]="focusTarget() === 'new-game'"
+              (click)="open('new-game', 'new-game')"
+            >
+              <span class="mm-item__label">NEW GAME</span>
+            </button>
+          </div>
+          <div class="mm-list__row" data-nav-row>
+            <button
+              type="button"
+              class="mm-item"
+              [appAutofocus]="focusTarget() === 'difficulty'"
+              (click)="open('difficulty', 'difficulty')"
+            >
+              <span class="mm-item__label">DIFFICULTY</span>
+              <span class="mm-item__meta">{{ selectedDifficulty().name }} · {{ selectedDifficulty().tier }}</span>
+            </button>
+          </div>
+          <div class="mm-list__row" data-nav-row>
+            <button
+              type="button"
+              class="mm-item"
+              [appAutofocus]="focusTarget() === 'settings'"
+              (click)="open('settings', 'settings')"
+            >
+              <span class="mm-item__label">SETTINGS</span>
+            </button>
+          </div>
+          <div class="mm-list__row" data-nav-row>
+            <button
+              type="button"
+              class="mm-item"
+              [appAutofocus]="focusTarget() === 'credits'"
+              (click)="open('credits', 'credits')"
+            >
+              <span class="mm-item__label">CREDITS</span>
+            </button>
+          </div>
+        </nav>
+        <p class="mm__hint" aria-hidden="true">
+          <kbd class="key">↑</kbd><kbd class="key">↓</kbd> select · <kbd class="key">ENTER</kbd> confirm ·
+          <kbd class="key">ESC</kbd> back
+        </p>
+      }
+
+      @case ('new-game') {
+        <app-difficulty-picker
+          [mode]="'new'"
+          [initial]="selectedDifficulty().id"
+          [savedShift]="continueLine()"
+          (confirmed)="startNewShift($event)"
+          (cancelled)="back()"
+        />
+      }
+
+      @case ('difficulty') {
+        <app-difficulty-picker
+          [mode]="'default'"
+          [initial]="selectedDifficulty().id"
+          (picked)="setDefaultDifficulty($event)"
+          (confirmed)="back()"
+          (cancelled)="back()"
+        />
+      }
+
+      @case ('settings') {
+        <app-settings-panel class="panel panel--settings" (closed)="back()" />
+      }
+
+      @case ('credits') {
+        <section class="panel panel--credits" aria-labelledby="credits-title">
+          <header class="panel__head">
+            <span class="panel__code" aria-hidden="true">FAC-CRD</span>
+            <h2 class="panel__title" id="credits-title">CREDITS</h2>
+          </header>
+          <dl class="credits">
+            <div class="credits__row">
+              <dt>A game by</dt>
+              <dd>{{ author }}</dd>
+            </div>
+            <div class="credits__row">
+              <dt>Built with</dt>
+              <dd>Angular · Babylon.js · Howler.js</dd>
+            </div>
+            <div class="credits__row">
+              <dt>Audio</dt>
+              <dd>Every sound is synthesised procedurally at runtime.</dd>
+            </div>
+            <div class="credits__row">
+              <dt>Geometry &amp; textures</dt>
+              <dd>Generated procedurally. No third-party assets.</dd>
+            </div>
+          </dl>
+          <p class="credits__coda">Thank you for inspecting floor 14. It noticed.</p>
+          <div class="panel__actions" appMenuNav>
+            <div class="btn-row" data-nav-row>
+              <button type="button" class="btn btn--primary" appAutofocus (click)="closeCredits()">BACK</button>
+            </div>
+          </div>
+        </section>
+      }
+    }
+  </main>
+
+  <footer class="mm__footer">
+    <section class="mm-endings" aria-labelledby="endings-title">
+      <h2 class="mm-endings__title" id="endings-title">
+        ENDINGS <span class="mm-endings__count">{{ endingsUnlocked() }}/{{ endings().length }}</span>
+      </h2>
+      <ol class="mm-endings__list">
+        @for (e of endings(); track e.code) {
+          <li class="mm-endings__item" [class.is-locked]="!e.unlocked">
+            <span class="mm-endings__code">{{ e.code }}</span>
+            <span class="mm-endings__name">{{ e.title }}</span>
+          </li>
+        }
+      </ol>
+    </section>
+
+    @if (fallbackStorage) {
+      <p class="notice notice--warning mm__storage" role="note">
+        Browser storage is unavailable. Progress will not persist after this tab closes.
+      </p>
+    }
+
+    <p class="mm__sign" aria-hidden="true">HSG / FAC-14 / REV 2.3</p>
+  </footer>
+</div>

@@ -1,0 +1,64 @@
+<canvas #canvas class="game__canvas" tabindex="0" aria-label="Game view"></canvas>
+
+@if (hudMounted()) {
+  <app-hud [concealed]="hudConcealed()" />
+}
+
+@if (showRelockVeil()) {
+  <button type="button" class="veil" (click)="relock()">
+    <span class="veil__label">CLICK TO CONTINUE</span>
+    <span class="veil__hint"><kbd class="key">ESC</kbd> pause</span>
+  </button>
+}
+
+@switch (phase()) {
+  @case ('idle') {
+    <app-loading-screen [progress]="0" [message]="'Preparing'" [floorLabel]="loadingFloor()" />
+  }
+  @case ('loading') {
+    <app-loading-screen
+      [progress]="session.loading().progress"
+      [message]="session.loading().message"
+      [floorLabel]="loadingFloor()"
+    />
+  }
+  @case ('error') {
+    <div class="overlay overlay--error fx-grain fx-vignette" role="alertdialog" aria-modal="true" aria-labelledby="error-title" aria-describedby="error-message">
+      <div class="failure">
+        <span class="panel__code" aria-hidden="true">FAC-ERR</span>
+        <h1 class="failure__title" id="error-title">THE FLOOR COULD NOT BE LOADED</h1>
+        <p class="failure__message" id="error-message">{{ session.error() ?? 'Unknown error.' }}</p>
+        <div class="failure__actions" appMenuNav>
+          <div class="btn-row" data-nav-row>
+            <button type="button" class="btn btn--primary" appAutofocus (click)="retry()">RETRY</button>
+            <button type="button" class="btn" (click)="toMenu()">MAIN MENU</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+  @case ('awaiting-start') {
+    <button type="button" class="overlay overlay--wake fx-grain fx-vignette" appAutofocus (click)="wake()">
+      <span class="wake__label">{{ session.isResumed() ? 'CLICK TO RESUME SHIFT' : 'CLICK TO WAKE UP' }}</span>
+      <span class="wake__details">{{ wakeDetails() }}</span>
+      <span class="wake__hint">Headphones recommended</span>
+    </button>
+  }
+  @case ('intro') {
+    <app-intro-overlay />
+  }
+  @case ('paused') {
+    <app-pause-menu />
+  }
+  @case ('notebook') {
+    <app-notebook />
+  }
+  @case ('terminal') {
+    <app-investigation-terminal />
+  }
+  @case ('ending') {
+    <app-ending-screen />
+  }
+}
+
+<app-perf-readout />

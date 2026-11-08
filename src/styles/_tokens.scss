@@ -1,0 +1,102 @@
+// Design tokens. Everything visual reads from these custom properties.
+// Palette: near-black surfaces, warm off-white text, muted fluorescent green, amber for warnings,
+// a restrained red reserved for CRITICAL.
+
+:root {
+  color-scheme: dark;
+
+  // Surfaces
+  --c-void: #060605;
+  --c-bg: #0a0a09;
+  --c-bg-1: #10100e;
+  --c-bg-2: #171713;
+  --c-scrim: rgba(5, 5, 4, 0.8);
+  --c-panel: rgba(8, 8, 7, 0.86);
+
+  // Rules / hairlines
+  --c-rule: rgba(216, 212, 200, 0.12);
+  --c-rule-2: rgba(216, 212, 200, 0.26);
+  --c-rule-3: rgba(216, 212, 200, 0.42);
+
+  // Text (contrast on --c-bg: 13.6 / 7.9 / 4.6 / decorative)
+  --c-text: #d8d4c8;
+  --c-text-2: #a9a497;
+  --c-text-3: #7f7b70;
+  --c-text-4: #55524a;
+
+  // Fluorescent accents
+  --c-tube: #c3dcb8;
+  --c-green: #8fb486;
+  --c-green-2: #5b7a55;
+  --c-green-glow: rgba(160, 205, 150, 0.3);
+
+  // Warnings
+  --c-amber: #d4a24a;
+  --c-amber-2: #8c6a2f;
+  --c-amber-text: #e3c58c;
+  --c-red: #b5483d;
+  --c-red-text: #d6634f;
+
+  // Terminal phosphor
+  --c-phosphor: #9fe08f;
+  --c-phosphor-hi: #d8ffcf;
+  --c-phosphor-2: #74b468;
+  --c-phosphor-3: #3e6a38;
+  --c-phosphor-ink: #041004;
+  --c-phosphor-glow: rgba(120, 230, 110, 0.45);
+
+  // Notebook paper
+  --c-paper: #cbc4b1;
+  --c-ink: #24211b;
+  --c-ink-2: #4d4739;
+  --c-ink-red: #8d3a2f;
+
+  // Type
+  --font-ui: 'Bahnschrift', 'DIN Alternate', 'DIN Next', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Bahnschrift Condensed', 'Bahnschrift', 'DIN Condensed', 'DIN Alternate', 'Arial Narrow', sans-serif;
+  --font-mono: 'Consolas', 'Lucida Console', 'Courier New', monospace;
+
+  --fs-2xs: 0.625rem;
+  --fs-xs: 0.6875rem;
+  --fs-sm: 0.8125rem;
+  --fs-md: 0.9375rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 2rem;
+
+  --track-tight: 0.04em;
+  --track: 0.1em;
+  --track-wide: 0.2em;
+  --track-wider: 0.32em;
+
+  // Space (4px base)
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.25rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-10: 2.5rem;
+  --s-12: 3rem;
+
+  // Edges of the in-game HUD
+  --edge-x: clamp(1rem, 2.5vw, 2rem);
+  --edge-y: clamp(1rem, 3vh, 2rem);
+
+  // Motion
+  --ease-out: cubic-bezier(0.16, 0.84, 0.3, 1);
+  --ease-in: cubic-bezier(0.6, 0, 0.84, 0.3);
+  --dur-fast: 140ms;
+  --dur: 260ms;
+  --dur-slow: 600ms;
+
+  // Layers
+  --z-hud: 10;
+  --z-veil: 20;
+  --z-overlay: 30;
+  --z-top: 50;
+
+  // Film grain (inline SVG fractal noise, desaturated)
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}

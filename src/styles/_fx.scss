@@ -1,0 +1,148 @@
+// Atmosphere utilities (grain, vignette) and shared keyframes.
+
+// Animated film grain on top of an overlay. The host must be positioned (overlays are).
+.fx-grain::after {
+  content: '';
+  position: absolute;
+  inset: -120px;
+  z-index: 2;
+  background-image: var(--noise);
+  background-size: 180px 180px;
+  opacity: 0.075;
+  pointer-events: none;
+  animation: fx-grain 0.9s steps(1) infinite;
+}
+
+// Vignette drawn as an inset shadow: sits above the background, below the content.
+.fx-vignette {
+  box-shadow: inset 0 0 22vmin 6vmin rgba(0, 0, 0, 0.82);
+}
+
+// Typewriter caret
+.tw__caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 0.08em;
+  vertical-align: -0.12em;
+  background: currentColor;
+  opacity: 0.85;
+  animation: fx-blink 1s steps(1) infinite;
+}
+
+@keyframes fx-grain {
+  0% {
+    transform: translate(0, 0);
+  }
+  17% {
+    transform: translate(-42px, 21px);
+  }
+  33% {
+    transform: translate(31px, -52px);
+  }
+  50% {
+    transform: translate(-18px, 63px);
+  }
+  67% {
+    transform: translate(54px, 9px);
+  }
+  83% {
+    transform: translate(-61px, -33px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes fx-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fx-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fx-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fx-sink-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+// A fluorescent tube catching: on, stutter, on.
+@keyframes fx-tube-on {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 0.2;
+  }
+  55% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fx-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fx-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-grain::after {
+    animation: none;
+  }
+
+  .tw__caret {
+    animation: none;
+  }
+}

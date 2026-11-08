@@ -1,0 +1,81 @@
+<div class="pause" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+  <header class="pause__head">
+    <span class="panel__code" aria-hidden="true">SHIFT SUSPENDED</span>
+    <h1 class="pause__title" id="pause-title">PAUSED</h1>
+    @if (status()) {
+      <p class="pause__status">{{ status() }}</p>
+    }
+    @if (session.objectiveText()) {
+      <p class="pause__objective"><span class="pause__label">OBJECTIVE</span> {{ session.objectiveText() }}</p>
+    }
+  </header>
+
+  @switch (view()) {
+    @case ('root') {
+      <nav class="pause-list" appMenuNav aria-label="Pause menu">
+        <div data-nav-row>
+          <button type="button" class="mm-item mm-item--compact" [appAutofocus]="focusTarget() === 'resume'" (click)="resume()">
+            <span class="mm-item__label">RESUME</span>
+          </button>
+        </div>
+        <div data-nav-row>
+          <button
+            type="button"
+            class="mm-item mm-item--compact"
+            [appAutofocus]="focusTarget() === 'restart'"
+            (click)="open('confirm-restart', 'restart')"
+          >
+            <span class="mm-item__label">RESTART SHIFT</span>
+          </button>
+        </div>
+        <div data-nav-row>
+          <button
+            type="button"
+            class="mm-item mm-item--compact"
+            [appAutofocus]="focusTarget() === 'settings'"
+            (click)="open('settings', 'settings')"
+          >
+            <span class="mm-item__label">SETTINGS</span>
+          </button>
+        </div>
+        <div data-nav-row>
+          <button
+            type="button"
+            class="mm-item mm-item--compact"
+            [appAutofocus]="focusTarget() === 'menu'"
+            (click)="open('confirm-menu', 'menu')"
+          >
+            <span class="mm-item__label">MAIN MENU</span>
+          </button>
+        </div>
+      </nav>
+      <p class="pause__hint">Progress is saved automatically. <kbd class="key">ESC</kbd> resume</p>
+    }
+
+    @case ('settings') {
+      <app-settings-panel class="panel panel--settings panel--inline" (closed)="back()" />
+    }
+
+    @case ('confirm-restart') {
+      <app-confirm-prompt
+        heading="RESTART THE SHIFT?"
+        message="A new shift starts on the same difficulty. Everything on this floor is forgotten. Almost everything."
+        confirmLabel="RESTART"
+        cancelLabel="CANCEL"
+        (confirmed)="restart()"
+        (cancelled)="back()"
+      />
+    }
+
+    @case ('confirm-menu') {
+      <app-confirm-prompt
+        heading="RETURN TO THE MAIN MENU?"
+        message="Your shift is saved. You can continue it from the main menu."
+        confirmLabel="MAIN MENU"
+        cancelLabel="STAY"
+        (confirmed)="quit()"
+        (cancelled)="back()"
+      />
+    }
+  }
+</div>

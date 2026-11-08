@@ -1,0 +1,143 @@
+@let prompt = session.prompt();
+@let security = session.securityView();
+
+<!-- Top left: objective, shift clock, room, notifications -->
+<section class="hud__tl">
+  <ng-container *appRekey="session.objectiveText(); let objective">
+    @if (objective) {
+      <div class="hud-objective">
+        <span class="hud-label">OBJECTIVE</span>
+        <p class="hud-objective__text">{{ objective }}</p>
+      </div>
+    }
+  </ng-container>
+
+  <div class="hud-shift" [class.is-overtime]="session.overtime()">
+    <span class="hud-shift__clock" aria-label="Shift clock">{{ session.clock() }}</span>
+    @if (session.overtime()) {
+      <span class="hud-shift__tag">OVERTIME</span>
+    }
+    @if (session.roomName()) {
+      <span class="hud-shift__room">{{ session.roomName() }}</span>
+    }
+  </div>
+
+  <ol class="hud-toasts" aria-live="polite" aria-relevant="additions">
+    @for (toast of session.toasts(); track toast.id) {
+      <li class="hud-toast" [attr.data-tone]="toast.tone" animate.leave="is-leaving">{{ toast.text }}</li>
+    }
+  </ol>
+</section>
+
+<!-- Top right: investigation counters + building attention -->
+<section class="hud__tr">
+  <dl class="hud-stats">
+    <div class="hud-stat">
+      <dt>ANOMALIES CONFIRMED</dt>
+      <dd>
+        <span class="hud-stat__num">{{ session.confirmed() }}</span><span class="hud-stat__of">/{{ session.required() }}</span>
+      </dd>
+    </div>
+    <div class="hud-stat" [class.is-alert]="session.falseReports() > 0">
+      <dt>FALSE REPORTS</dt>
+      <dd><span class="hud-stat__num">{{ session.falseReports() }}</span></dd>
+    </div>
+    <ng-container *appRekey="noteKey(); let k">
+      <div class="hud-stat hud-stat--notes" [class.is-pulsing]="k > 0">
+        <dt>NOTES <kbd class="key key--tiny">TAB</kbd></dt>
+        <dd><span class="hud-stat__num">{{ session.notesCount() }}</span></dd>
+      </div>
+    </ng-container>
+  </dl>
+
+  @if (witnessHints()) {
+    <ng-container *appRekey="witnessKey(); let k">
+      @if (k > 0) {
+        <p class="hud-witness" role="status"><span class="hud-witness__mark" aria-hidden="true"></span>Something here felt wrong.</p>
+      }
+    </ng-container>
+  }
+
+  <app-attention-meter
+    [value]="attention.value()"
+    [level]="attention.level()"
+    [label]="attention.levelConfig().label"
+    [escalating]="attention.escalating()"
+  />
+</section>
+
+<!-- Centre: a dot, nothing more -->
+@if (!security) {
+  <div class="hud-crosshair" [class.is-active]="prompt !== null && !prompt.disabled" aria-hidden="true"></div>
+}
+
+<!-- Security camera view -->
+@if (security) {
+  <div class="hud-cctv" aria-hidden="true">
+    <span class="hud-cctv__corner hud-cctv__corner--tl"></span>
+    <span class="hud-cctv__corner hud-cctv__corner--tr"></span>
+    <span class="hud-cctv__corner hud-cctv__corner--bl"></span>
+    <span class="hud-cctv__corner hud-cctv__corner--br"></span>
+  </div>
+  <div class="hud-security" role="status">
+    <span class="hud-security__rec" aria-hidden="true">REC</span>
+    <span class="hud-security__cam">CAM {{ security.index + 1 }}/{{ security.count }}</span>
+    <span class="hud-security__label">— {{ security.label }}</span>
+    <span class="hud-security__keys">
+      <kbd class="key">A</kbd>/<kbd class="key">D</kbd> switch · <kbd class="key">E</kbd>/<kbd class="key">ESC</kbd> leave
+    </span>
+  </div>
+}
+
+<!-- Bottom centre: inspection card, interaction prompt, subtitles -->
+<section class="hud__bottom">
+  <ng-container *appRekey="session.inspection(); let card">
+    @if (card) {
+      <article class="hud-card" [attr.data-kind]="card.kind" animate.leave="is-leaving" aria-live="polite">
+        <h3 class="hud-card__title">{{ card.title }}</h3>
+        <p class="hud-card__text">{{ card.text }}</p>
+      </article>
+    }
+  </ng-container>
+
+  @if (prompt) {
+    <div class="hud-prompt" [class.is-disabled]="prompt.disabled">
+      <kbd class="key">{{ prompt.key }}</kbd>
+      <span class="hud-prompt__verb">{{ prompt.verb }}</span>
+      <span class="hud-prompt__sep" aria-hidden="true">·</span>
+      <span class="hud-prompt__target">{{ prompt.target }}</span>
+    </div>
+  }
+
+  @if (session.subtitle(); as line) {
+    <p class="hud-subtitle" role="status" animate.leave="is-leaving">{{ line }}</p>
+  }
+</section>
+
+<!-- First-session tutorial -->
+@if (tutorialRows().length) {
+  <aside class="hud-tutorial" aria-labelledby="hud-tutorial-title" animate.leave="is-leaving">
+    <h2 class="hud-tutorial__title" id="hud-tutorial-title">CONTROLS</h2>
+    <dl class="hud-tutorial__list">
+      @for (row of tutorialRows(); track row.keys) {
+        <div class="hud-tutorial__row">
+          <dt><kbd class="key">{{ row.keys }}</kbd></dt>
+          <dd>{{ row.action }}</dd>
+        </div>
+      }
+    </dl>
+    <button type="button" class="hud-tutorial__dismiss" (click)="session.dismissTutorial()">
+      <kbd class="key">ENTER</kbd> dismiss
+    </button>
+  </aside>
+}
+
+<!-- Flashlight -->
+<div class="hud-torch" [class.is-on]="session.flashlightOn()" aria-label="Flashlight" role="status">
+  <svg class="hud-torch__icon" viewBox="0 0 24 12" aria-hidden="true">
+    <path d="M1 4h11l4-3h3v10h-3l-4-3H1z" fill="none" stroke="currentColor" stroke-width="1.2" />
+    <path class="hud-torch__beam" d="M20 3l3-2M20 6h3.5M20 9l3 2" fill="none" stroke="currentColor" stroke-width="1" />
+  </svg>
+  <span class="hud-torch__state">{{ session.flashlightOn() ? 'ON' : 'OFF' }}</span>
+  <kbd class="key key--tiny">F</kbd>
+</div>

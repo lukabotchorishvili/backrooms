@@ -1,0 +1,181 @@
+<div class="crt" role="dialog" aria-modal="true" aria-labelledby="term-title">
+  <div class="crt__bezel">
+    <div class="crt__screen" (click)="finishBoot()">
+      <div class="crt__content">
+        <header class="term-header">
+          <p class="term-header__title" id="term-title">{{ header() }}</p>
+          <p class="term-header__sub">
+            {{ floor() }} · RECEPTION TERMINAL R-01 · EMPLOYEE {{ employee() }} · {{ session.clock() }}
+          </p>
+        </header>
+
+        @if (firstOpen) {
+          <div class="term-boot" aria-live="polite">
+            @for (line of bootLines(); track $index) {
+              @if ($index <= bootIndex() || !booting()) {
+                <p class="term-line" [class.term-line--blank]="!line">
+                  <app-typewriter [text]="line" [cps]="85" [instant]="!booting()" [caret]="booting()" (done)="bootLineDone($index)" />
+                </p>
+              }
+            }
+          </div>
+        } @else {
+          <p class="term-line term-line--dim">SESSION RESUMED ......... EMPLOYEE {{ employee() }}</p>
+        }
+
+        @if (booting()) {
+          <p class="term-hint term-hint--blink">PRESS ANY KEY</p>
+        } @else {
+          <section class="term-section" aria-label="Instructions">
+            @for (line of instructions(); track $index) {
+              <p class="term-line term-line--instruction">{{ line }}</p>
+            }
+          </section>
+
+          <section class="term-status" aria-labelledby="term-status-title">
+            <h2 class="term-heading" id="term-status-title">INSPECTION STATUS</h2>
+            <dl class="term-dl">
+              <div class="term-dl__row">
+                <dt>IRREGULARITIES CONFIRMED</dt>
+                <dd>{{ session.confirmed() }}/{{ session.required() }}</dd>
+              </div>
+              <div class="term-dl__row" [class.is-warn]="session.falseReports() > 0">
+                <dt>FALSE REPORTS</dt>
+                <dd>{{ session.falseReports() }}</dd>
+              </div>
+              <div class="term-dl__row">
+                <dt>BUILDING ATTENTION</dt>
+                <dd>{{ attentionLabel() }}</dd>
+              </div>
+              <div class="term-dl__row" [class.is-ok]="accessGranted()">
+                <dt>ELEVATOR ACCESS</dt>
+                <dd>{{ accessGranted() ? 'GRANTED' : 'DENIED' }}</dd>
+              </div>
+            </dl>
+            @if (systemNote) {
+              <p class="term-note"><span class="term-note__tag">SYSTEM NOTE</span> {{ systemNote }}</p>
+            }
+          </section>
+
+          @if (objective() === 'request-access') {
+            <section class="term-access" aria-labelledby="term-access-title">
+              <h2 class="term-heading" id="term-access-title">INSPECTION COMPLETE</h2>
+              <p class="term-line">All required irregularities have been confirmed. You may request elevator access.</p>
+              <button type="button" class="term-btn term-btn--primary term-btn--large" (click)="requestAccess()">
+                [ REQUEST ELEVATOR ACCESS ]
+              </button>
+              @if (accessDenied()) {
+                <p class="term-line term-line--warn" role="alert">REQUEST DENIED. TRY AGAIN.</p>
+              }
+            </section>
+          } @else if (accessGranted()) {
+            <section class="term-access term-access--granted" #accessEl tabindex="-1" role="status">
+              <p class="term-access__granted">ACCESS GRANTED. PROCEED TO THE ELEVATOR LOBBY.</p>
+            </section>
+          }
+
+          @if (result(); as r) {
+            <div class="term-result" #resultEl tabindex="-1" role="status" [attr.data-outcome]="r.outcome">
+              <p class="term-result__head">
+                <span class="term-result__tag">{{ resultTag() }}</span> {{ r.headline }}
+              </p>
+              @if (r.detail) {
+                <p class="term-result__detail">{{ r.detail }}</p>
+              }
+            </div>
+          }
+
+          <form
+            class="term-form"
+            (submit)="submit($event)"
+            (keydown.enter)="onFieldEnter($event)"
+            aria-labelledby="term-form-title"
+          >
+            <h2 class="term-heading" id="term-form-title">FILE IRREGULARITY REPORT</h2>
+
+            <div class="term-form__grid">
+              <fieldset class="term-field">
+                <legend class="term-field__legend"><span class="term-field__num">01</span> LOCATION</legend>
+                <div class="term-options">
+                  @for (room of rooms; track room.id) {
+                    <label class="term-opt">
+                      <input
+                        class="term-opt__input"
+                        type="radio"
+                        name="term-room"
+                        [value]="room.id"
+                        [checked]="roomId() === room.id"
+                        (change)="selectRoom(room.id)"
+                      />
+                      <span class="term-opt__mark" aria-hidden="true"></span>
+                      <span class="term-opt__text">{{ room.name }}</span>
+                    </label>
+                  } @empty {
+                    <p class="term-line term-line--dim">No locations on record.</p>
+                  }
+                </div>
+              </fieldset>
+
+              <fieldset class="term-field" [disabled]="roomId() === null">
+                <legend class="term-field__legend"><span class="term-field__num">02</span> DESCRIPTION</legend>
+                <div class="term-options">
+                  @if (roomId() === null) {
+                    <p class="term-line term-line--dim">Select a location first.</p>
+                  } @else {
+                    @for (entry of candidates(); track entry.id) {
+                      <label class="term-opt term-opt--entry">
+                        <input
+                          class="term-opt__input"
+                          type="radio"
+                          name="term-observation"
+                          [value]="entry.id"
+                          [checked]="observationId() === entry.id"
+                          (change)="selectObservation(entry.id)"
+                        />
+                        <span class="term-opt__mark" aria-hidden="true"></span>
+                        <span class="term-opt__text">
+                          <span class="term-opt__meta">{{ entry.clock }} · {{ entry.subject }}</span>
+                          <span class="term-opt__desc">{{ entry.text }}</span>
+                        </span>
+                      </label>
+                    } @empty {
+                      <p class="term-line term-line--dim">No notebook entries for this location.</p>
+                    }
+                  }
+                </div>
+              </fieldset>
+
+              <fieldset class="term-field">
+                <legend class="term-field__legend"><span class="term-field__num">03</span> CATEGORY</legend>
+                <div class="term-options">
+                  @for (c of categories; track c.id) {
+                    <label class="term-opt">
+                      <input
+                        class="term-opt__input"
+                        type="radio"
+                        name="term-category"
+                        [value]="c.id"
+                        [checked]="category() === c.id"
+                        (change)="selectCategory(c.id)"
+                      />
+                      <span class="term-opt__mark" aria-hidden="true"></span>
+                      <span class="term-opt__text">{{ c.label }}</span>
+                    </label>
+                  }
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="term-actions">
+              <button type="submit" class="term-btn term-btn--primary" [disabled]="!canSubmit()">[ SUBMIT REPORT ]</button>
+              <button type="button" class="term-btn" (click)="cancel()">[ CANCEL ]</button>
+              <span class="term-hint">TAB next field · ARROWS choose · ENTER submit · ESC leave</span>
+            </div>
+          </form>
+        }
+      </div>
+      <div class="crt__scanlines" aria-hidden="true"></div>
+      <div class="crt__glare" aria-hidden="true"></div>
+    </div>
+  </div>
+</div>

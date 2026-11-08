@@ -1,1 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+// Global styles for THE FLOOR IS LYING.
+// Almost all styling lives in these partials (component stylesheets stay empty to respect the
+// per-component style budget). Order matters: tokens first, then base, utilities, components.
+
+@use 'styles/tokens';
+@use 'styles/base';
+@use 'styles/fx';
+@use 'styles/controls';
+@use 'styles/menu';
+@use 'styles/settings';
+@use 'styles/game';
+@use 'styles/hud';
+@use 'styles/notebook';
+@use 'styles/terminal';
+@use 'styles/endings';
